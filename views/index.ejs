@@ -51,13 +51,13 @@
     }
 
     .logo {
-        text-align: center;
+        border-radius: 15px;
     }
 </style>
 
 <body>
     <div>
-        <img src="/logo.png" alt="">
+        <img class="logo" src="/logo.png" alt="">
         <% if(success) { %>
             <%- include('./success'); %>
                 <% } else { %>
