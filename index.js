@@ -13,6 +13,7 @@ const io = new Server(server, {
 const config = require("./config");
 
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/views"));
 
 app.get("/login", function (req, res, next) {
   const state = req.query.state;
@@ -46,7 +47,7 @@ const redirect_uri_handle = async (req, res) => {
     }
     throw new Error(response.statusText);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -65,17 +66,20 @@ const fetchUserName = async (res, token) => {
     }
     throw new Error(fetchUserName.statusText);
   } catch (error) {
-    console.log("Fetching username: ", error);
+    console.error("Fetching username: ", error);
   }
 };
 
 app.get("/auth/twitch", redirect_uri_handle);
 
+app.get("/index", function (req, res) {
+  res.render("index", { success: true, username: "zekooo" });
+});
+
 io.on("connect", (socket) => {
   console.log("a user connected", socket.id);
   //Add reaction
   socket.on("addReaction", (payload) => {
-    console.log(payload);
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) + 1,
