@@ -7,7 +7,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
-  cors: "http://localhost:8080",
+  cors: "http://localhost:8080/dist",
 });
 
 const config = require("./config");
@@ -78,6 +78,11 @@ app.get("/index", function (req, res) {
 
 io.on("connect", (socket) => {
   console.log("a user connected", socket.id);
+  // handle custom message
+  socket.on("customMsg", (payload) => {
+    payload.user = { ...payload.user, id: 122324234 };
+    io.emit("customMsgBack", payload);
+  });
   //Add reaction
   socket.on("addReaction", (payload) => {
     io.emit("addRemoveReactionBack", {
