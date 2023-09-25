@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const session = require("express-session");
+const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fetch = require("node-fetch");
 const http = require("http");
@@ -72,29 +72,36 @@ const fetchUserName = async (res, token) => {
 
 app.get("/auth/twitch", redirect_uri_handle);
 
-app.get("/index", function (req, res) {
-  res.render("index", { success: true, username: "zekooo" });
-});
-
 io.on("connect", (socket) => {
   console.log("a user connected", socket.id);
   // handle custom message
-  socket.on("customMsg", (payload) => {
-    payload.user = { ...payload.user, id: 122324234 };
-    io.emit("customMsgBack", payload);
+  socket.on("messageInExt", (payload) => {
+    payload.user = { ...payload.user, id: uuidv4() };
+    io.emit("messageInExtBackToAll", payload);
+    io.to(payload.user.socketId).emit(
+      "messageInExtBackToSocket",
+      payload.message
+    );
   });
   //Add reaction
   socket.on("addReaction", (payload) => {
+    const voters = payload.voters
+      ? `${payload.voters},${payload.user}`
+      : payload.user;
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) + 1,
+      voters,
     });
   });
   //Remove reaction
   socket.on("removeReaction", (payload) => {
+    const parsedVoters = payload.voters.split(",");
+    const voters = parsedVoters.filter((voter) => voter !== payload.user);
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) - 1,
+      voters: voters.length ? voters : "",
     });
   });
 });
