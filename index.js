@@ -7,7 +7,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
-  cors: "http://localhost:8080",
+  cors: process.env.CLIENT_BASE_URL,
 });
 
 const config = require("./config");
