@@ -17,6 +17,12 @@ const config = require("./config");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/views"));
 
+app.use((req, res, next) => {
+  res.append("Access-Control-Allow-Origin", [
+    "https://ocp3aq7yay5q6hg1ugnssmukwd17kb.ext-twitch.tv/",
+  ]);
+  next();
+});
 app.get("/login", function (req, res, next) {
   const state = req.query.state;
   app.set("loginState", state);
