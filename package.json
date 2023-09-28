@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node index",
-    "dev": "nodemon index"
+    "dev": "nodemon index",
+    "git push": "git push; git push heroku main"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
