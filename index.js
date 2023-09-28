@@ -6,6 +6,12 @@ const fetch = require("node-fetch");
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
+app.use((req, res, next) => {
+  res.append("Access-Control-Allow-Origin", [process.env.CLIENT_BASE_URL]);
+  next();
+});
+
 const io = new Server(server, {
   cors: process.env.CLIENT_BASE_URL,
 });
@@ -17,12 +23,6 @@ const config = require("./config");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/views"));
 
-app.use((req, res, next) => {
-  res.append("Access-Control-Allow-Origin", [
-    "https://ocp3aq7yay5q6hg1ugnssmukwd17kb.ext-twitch.tv/",
-  ]);
-  next();
-});
 app.get("/login", function (req, res, next) {
   const state = req.query.state;
   app.set("loginState", state);
@@ -93,9 +93,14 @@ io.on("connect", (socket) => {
   });
   //Add reaction
   socket.on("addReaction", (payload) => {
-    const voters = payload.voters
-      ? `${payload.voters},${payload.user}`
-      : payload.user;
+    let voters = JSON.parse(payload.voters);
+    const voterUser = {
+      login: payload.user.login,
+      display_name: payload.user.display_name,
+      profilePic: payload.user.profile_image_url,
+    };
+    voters = JSON.stringify([...voters, voterUser]);
+    console.log(voters);
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) + 1,
@@ -104,12 +109,15 @@ io.on("connect", (socket) => {
   });
   //Remove reaction
   socket.on("removeReaction", (payload) => {
-    const parsedVoters = payload.voters.split(",");
-    const voters = parsedVoters.filter((voter) => voter !== payload.user);
+    let parsedVoters = JSON.parse(payload.voters);
+    const voters = parsedVoters.filter(
+      (voter) => voter.login !== payload.user.login
+    );
+
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) - 1,
-      voters: voters.length ? voters : "",
+      voters: JSON.stringify(voters),
     });
   });
 });
