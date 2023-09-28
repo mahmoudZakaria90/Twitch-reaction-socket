@@ -10,6 +10,8 @@ const io = new Server(server, {
   cors: process.env.CLIENT_BASE_URL,
 });
 
+console.log(process.env.CLIENT_BASE_URL);
+
 const config = require("./config");
 
 app.set("view engine", "ejs");
