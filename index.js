@@ -11,16 +11,15 @@ app.use((req, res, next) => {
   res.append("Access-Control-Allow-Origin", [
     process.env.CLIENT_BASE_URL,
     "https://supervisor.ext-twitch.tv",
-    "https://www.twitch.tv/popout/zak_90/extensions/ocp3aq7yay5q6hg1ugnssmukwd17kb-0.0.1/panel",
+    "https://www.twitch.tv/popout/zak_90/extensions/ocp3aq7yay5q6hg1ugnssmukwd17kb-0.0.1/panel"
   ]);
   next();
 });
 
 const io = new Server(server, {
   cors: {
-    origin: `https://ocp3aq7yay5q6hg1ugnssmukwd17kb.ext-twitch.tv`,
-    methods: ['GET', 'POST'],
-  },
+    origin: process.env.CLIENT_BASE_URL,
+  }
 });
 
 console.log(process.env.CLIENT_BASE_URL);
