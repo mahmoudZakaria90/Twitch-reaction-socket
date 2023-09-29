@@ -8,11 +8,9 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 
 app.use((req, res, next) => {
-  res.append("Access-Control-Allow-Origin", [
-    process.env.CLIENT_BASE_URL,
-    "https://supervisor.ext-twitch.tv",
-    "https://www.twitch.tv/popout/zak_90/extensions/ocp3aq7yay5q6hg1ugnssmukwd17kb-0.0.1/panel"
-  ]);
+  res.append("Access-Control-Allow-Origin", 
+    process.env.CLIENT_BASE_URL
+  );
   next();
 });
 
