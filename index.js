@@ -17,11 +17,10 @@ app.use((req, res, next) => {
 });
 
 const io = new Server(server, {
-  cors: [
-    process.env.CLIENT_BASE_URL,
-    "https://supervisor.ext-twitch.tv",
-    "https://www.twitch.tv/popout/zak_90/extensions/ocp3aq7yay5q6hg1ugnssmukwd17kb-0.0.1/panel",
-  ],
+  cors: {
+    origin: process.env.CLIENT_BASE_URL,
+    methods: ['GET', 'POST'],
+  },
 });
 
 console.log(process.env.CLIENT_BASE_URL);
