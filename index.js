@@ -10,7 +10,7 @@ const cors = require("cors");
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_BASE_URL,
   },
 });
 
