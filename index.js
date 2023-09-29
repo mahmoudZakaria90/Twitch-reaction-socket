@@ -8,9 +8,13 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const cors = require("cors");
 
-app.use(cors({ origin: process.env.CLIENT_BASE_URL }));
+app.use(cors());
 
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_BASE_URL,
+  },
+});
 
 console.log(process.env.CLIENT_BASE_URL, "zak");
 
