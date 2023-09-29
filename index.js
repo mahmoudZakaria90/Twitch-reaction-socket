@@ -7,17 +7,17 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_BASE_URL,
+  }
+});
+
 app.use((req, res, next) => {
   res.append("Access-Control-Allow-Origin", 
     process.env.CLIENT_BASE_URL
   );
   next();
-});
-
-const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_BASE_URL,
-  }
 });
 
 console.log(process.env.CLIENT_BASE_URL);
