@@ -16,7 +16,7 @@ const io = new Server(server, {
   },
 });
 
-console.log(process.env.CLIENT_BASE_URL);
+console.log(process.env.CLIENT_BASE_URL, "zak");
 
 const config = require("./config");
 
