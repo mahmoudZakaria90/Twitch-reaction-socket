@@ -12,7 +12,7 @@ app.use(cors());
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_BASE_URL,
+    origin: "*",
   },
 });
 
