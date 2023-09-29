@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_BASE_URL,
+    origin: `https://ocp3aq7yay5q6hg1ugnssmukwd17kb.ext-twitch.tv`,
     methods: ['GET', 'POST'],
   },
 });
