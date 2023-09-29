@@ -6,18 +6,16 @@ const fetch = require("node-fetch");
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+const cors = require('cors');
+
+
+app.use(cors());
+
 
 const io = new Server(server, {
   cors: {
     origin: process.env.CLIENT_BASE_URL,
   }
-});
-
-app.use((req, res, next) => {
-  res.append("Access-Control-Allow-Origin", 
-    process.env.CLIENT_BASE_URL
-  );
-  next();
 });
 
 console.log(process.env.CLIENT_BASE_URL);
