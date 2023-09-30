@@ -97,31 +97,31 @@ io.on("connect", (socket) => {
   });
   //Add reaction
   socket.on("addReaction", (payload) => {
-    let voters = JSON.parse(payload.voters);
-    const voterUser = {
+    let reactors = JSON.parse(payload.reactors);
+    const newReactorUser = {
       login: payload.user.login,
       display_name: payload.user.display_name,
       profilePic: payload.user.profile_image_url,
     };
-    voters = JSON.stringify([...voters, voterUser]);
-    console.log(voters);
+    reactors = JSON.stringify([...reactors, newReactorUser]);
+    console.log(reactors);
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) + 1,
-      voters,
+      reactors,
     });
   });
   //Remove reaction
   socket.on("removeReaction", (payload) => {
-    let parsedVoters = JSON.parse(payload.voters);
-    const voters = parsedVoters.filter(
-      (voter) => voter.login !== payload.user.login
+    let parsedReactors = JSON.parse(payload.reactors);
+    const reactors = parsedReactors.filter(
+      (reactor) => reactor.login !== payload.user.login
     );
 
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) - 1,
-      voters: JSON.stringify(voters),
+      reactors: JSON.stringify(reactors),
     });
   });
 });
