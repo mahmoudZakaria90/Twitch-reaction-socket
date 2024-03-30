@@ -20,8 +20,6 @@ const io = new Server(server, {
   },
 });
 
-console.log(process.env.CLIENT_BASE_URL, "zak");
-
 const config = require("./config");
 
 app.set("view engine", "ejs");
@@ -104,7 +102,6 @@ io.on("connect", (socket) => {
       profilePic: payload.user.profile_image_url,
     };
     reactors = JSON.stringify([...reactors, newReactorUser]);
-    console.log(reactors);
     io.emit("addRemoveReactionBack", {
       id: payload.id,
       reactionsCount: Number(payload.reactionsCount) + 1,
