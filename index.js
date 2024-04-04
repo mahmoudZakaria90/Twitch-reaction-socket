@@ -28,7 +28,7 @@ app.use(express.static(__dirname + "/views"));
 app.get("/login", function (req, res, next) {
   const state = req.query.state;
   app.set("loginState", state);
-  const authURL = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${config.VARS.client_id}&redirect_uri=${config.VARS.redirect_uri}&scope=chat%3Aread+chat%3Aedit&state=${state}`;
+  const authURL = `https://${config.VARS.oauth2_url}/authorize?response_type=code&client_id=${config.VARS.client_id}&redirect_uri=${config.VARS.redirect_uri}&scope=chat%3Aread+chat%3Aedit&state=${state}`;
   res.redirect(authURL);
 });
 
@@ -63,18 +63,21 @@ const redirect_uri_handle = async (req, res) => {
 
 const fetchUserName = async (res, token) => {
   try {
-    const fetchUserName = await fetch(`${config.VARS.oauth2_url}/validate`, {
-      headers: {
-        "Content-Type": config.oauth2UserHeaders,
-        Authorization: `OAuth ${token}`,
-      },
-    });
-    if (fetchUserName.ok) {
-      const username = await fetchUserName.json();
+    const fetchUserNameRequest = await fetch(
+      `${config.VARS.oauth2_url}/validate`,
+      {
+        headers: {
+          "Content-Type": config.oauth2UserHeaders,
+          Authorization: `OAuth ${token}`,
+        },
+      }
+    );
+    if (fetchUserNameRequest.ok) {
+      const username = await fetchUserNameRequest.json();
       res.render("index", { success: true, username: username.login });
       return;
     }
-    throw new Error(fetchUserName.statusText);
+    throw new Error(fetchUserNameRequest.statusText);
   } catch (error) {
     console.error("Fetching username: ", error);
   }
@@ -95,30 +98,28 @@ io.on("connect", (socket) => {
   });
   //Add reaction
   socket.on("addReaction", (payload) => {
-    let reactors = JSON.parse(payload.reactors);
+    let reactors = payload.reactors;
     const newReactorUser = {
-      login: payload.user.login,
-      display_name: payload.user.display_name,
-      profilePic: payload.user.profile_image_url,
+      displayName: payload.user.displayName,
+      profilePic: payload.user.profilePic,
     };
-    reactors = JSON.stringify([...reactors, newReactorUser]);
+    reactors = [...reactors, newReactorUser];
     io.emit("addRemoveReactionBack", {
       id: payload.id,
-      reactionsCount: Number(payload.reactionsCount) + 1,
+      reactionsCount: payload.reactionsCount + 1,
       reactors,
     });
   });
   //Remove reaction
   socket.on("removeReaction", (payload) => {
-    let parsedReactors = JSON.parse(payload.reactors);
-    const reactors = parsedReactors.filter(
-      (reactor) => reactor.login !== payload.user.login
+    const reactors = payload.reactors.filter(
+      (reactor) => reactor.displayName !== payload.user.displayName
     );
 
     io.emit("addRemoveReactionBack", {
       id: payload.id,
-      reactionsCount: Number(payload.reactionsCount) - 1,
-      reactors: JSON.stringify(reactors),
+      reactionsCount: payload.reactionsCount - 1,
+      reactors,
     });
   });
 });
