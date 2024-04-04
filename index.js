@@ -28,7 +28,7 @@ app.use(express.static(__dirname + "/views"));
 app.get("/login", function (req, res, next) {
   const state = req.query.state;
   app.set("loginState", state);
-  const authURL = `https://${config.VARS.oauth2_url}/authorize?response_type=code&client_id=${config.VARS.client_id}&redirect_uri=${config.VARS.redirect_uri}&scope=chat%3Aread+chat%3Aedit&state=${state}`;
+  const authURL = `${config.VARS.oauth2_url}/authorize?response_type=code&client_id=${config.VARS.client_id}&redirect_uri=${config.VARS.redirect_uri}&scope=chat%3Aread+chat%3Aedit&state=${state}`;
   res.redirect(authURL);
 });
 
